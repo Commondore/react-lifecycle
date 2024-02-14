@@ -1,20 +1,23 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import Post from "./components/Post/Post";
-import FullPost from "./components/FullPost/FullPost";
-import { IPost } from "./interfaces/posts";
+import PostComments from "./components/PostComments/PostComments";
 import { fetchPosts, fetchUserById } from "./api/request";
 
-interface IBlog {
-  id: number | string;
+export interface IBlog {
+  id: number;
   title: string;
   author: string;
+  body: string;
 }
+
+let author = "";
 
 function App() {
   const [posts, setPosts] = useState<IBlog[]>([]);
   const [visible, setVisible] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [selectedID, setSelectedPost] = useState<number | null>(null);
 
   // useEffect(() => {
   //   // componentDidMount
@@ -49,13 +52,14 @@ function App() {
     (async () => {
       const posts = await fetchPosts(6);
       let userID: number | null = null;
-      let author = "";
       const reqUsers = posts.map(async (post) => {
         if (userID !== post.userId) {
           userID = post.userId;
           const user = await fetchUserById(post.userId);
           author = user.name;
         }
+        console.log(author);
+
         return {
           ...post,
           author,
@@ -76,13 +80,20 @@ function App() {
       ) : (
         <div className="list">
           {posts.map((post) => {
-            return <Post key={post.id} name={post.title} author={post.author} />;
+            return (
+              <Post
+                key={post.id}
+                onSelect={() => setSelectedPost(post.id)}
+                name={post.title}
+                author={post.author}
+              />
+            );
           })}
         </div>
       )}
 
       <button onClick={() => setVisible((v) => !v)}>toggle</button>
-      {visible && <FullPost />}
+      {visible && <PostComments selectedID={selectedID} />}
     </div>
   );
 }

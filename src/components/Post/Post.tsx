@@ -3,9 +3,10 @@ import { memo } from "react";
 interface PostProps {
   name: string;
   author: string;
+  onSelect: () => void;
 }
 
-const Post = ({ name, author }: PostProps) => {
+const Post = ({ name, author, onSelect }: PostProps) => {
   // useEffect(() => {
   //   console.log("[Post] mount");
   // });
@@ -13,7 +14,7 @@ const Post = ({ name, author }: PostProps) => {
   // console.log("[Post] render");
 
   return (
-    <div className="post">
+    <div className="post" onClick={onSelect}>
       <h3>{name}</h3>
       <p>Author: {author}</p>
     </div>
